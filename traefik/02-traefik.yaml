@@ -1,0 +1,38 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: traefik-deployment
+  labels:
+    app: traefik
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traefik
+  template:
+    metadata:
+      labels:
+        app: traefik
+    spec:
+      serviceAccountName: traefik-account
+      containers:
+        - name: traefik
+          image: traefik:v2.11
+          args:
+            - --api.insecure
+            - --providers.kubernetesingress
+            - --tracing=true
+            - --tracing.serviceName=traefik
+            - --tracing.jaeger=true
+            - --tracing.jaeger.samplingServerURL=http://jaeger-agent:5778/sampling
+            - --tracing.jaeger.samplingType=const
+            - --tracing.jaeger.samplingParam=1.0
+            - --tracing.jaeger.localAgentHostPort=jaeger-agent:6831
+            - --tracing.jaeger.propagation=jaeger
+            - --tracing.jaeger.traceContextHeaderName=trace-id
+          ports:
+            - name: web
+              containerPort: 80
+            - name: dashboard
+              containerPort: 8080
