@@ -14,3 +14,17 @@ spec:
               name: jaeger-query
               port:
                 number: 16686
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: jaeger-cb9c786c6-zkgtc
+  namespace: observability
+spec:
+  containers:
+    - args:
+        - '--sampling.strategies-file=/etc/jaeger/sampling/sampling.json'
+        - '--query.base-path=/jaeger'
+      image: 'jaegertracing/all-in-one:1.54.0'
+      imagePullPolicy: IfNotPresent
+      name: jaeger
