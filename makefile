@@ -17,10 +17,8 @@ argo:
 	kubectl apply -n argocd -k . && \
 	kubectl apply -n argocd -f 02-ingress.yaml
 
-jaeger: cert-manager
+jaeger:
 	cd jaeger && \
 	kubectl apply -f 00-namespace.yaml && \
 	kubectl apply -f https://github.com/jaegertracing/jaeger-operator/releases/download/v1.54.0/jaeger-operator.yaml \
 	-f 01-jaeger.yaml
-cert-manager:
-	kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.4/cert-manager.yaml
