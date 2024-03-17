@@ -2,7 +2,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: jaeger-query
-  namespace: observability
 spec:
   rules:
   - http:
@@ -15,16 +14,25 @@ spec:
               port:
                 number: 16686
 ---
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: jaeger-cb9c786c6-zkgtc
-  namespace: observability
+  name: jaeger
 spec:
-  containers:
-    - args:
-        - '--sampling.strategies-file=/etc/jaeger/sampling/sampling.json'
-        - '--query.base-path=/jaeger'
-      image: 'jaegertracing/all-in-one:1.54.0'
-      imagePullPolicy: IfNotPresent
-      name: jaeger
+  template:
+    spec:
+      containers:
+        - args:
+            - '--sampling.strategies-file=/etc/jaeger/sampling/sampling.json'
+            - '--query.base-path=/jaeger'
+          image: 'jaegertracing/all-in-one:1.54.0'
+          imagePullPolicy: IfNotPresent
+          name: jaeger
+  selector:
+    matchLabels:
+      app: jaeger
+      app.kubernetes.io/component: all-in-one
+      app.kubernetes.io/instance: jaeger
+      app.kubernetes.io/managed-by: jaeger-operator
+      app.kubernetes.io/name: jaeger
+      app.kubernetes.io/part-of: jaeger
